@@ -1,0 +1,47 @@
+(defun fb (number)
+  (do ((count 0 (1+ count))
+       (fir 1 sec)
+       (sec 1 (+ fir sec)))
+      ((> count number) (print sec))
+    (print fir)))
+
+(defun my-when (condition &rest body)
+  `(if ,condition (progn ,@body)))
+
+(defun primep (number)
+  (when (> number 1)
+    (loop for fac from 2 to (isqrt number) never (zerop (mod number fac)))))
+
+(defun next-prime (number)
+  (loop for n from number when (primep n) return n))
+
+(defmacro do-primes (var-end-range &rest body)
+  (let ((var (first var-end-range))
+        (start (second var-end-range))
+        (end (third var-end-range)))
+    `(do ((,var (next-prime ,start) (next-prime (1+ ,var))))
+         ((> ,var ,end))
+       ,@body)))
+
+(defmacro do-primes2 ((var start end) &body body)
+  `(do ((,var (next-prime ,start) (next-prime (1+ ,var))))
+       ((> ,var ,end))
+     ,@body))
+
+(defmacro do-primes-safe ((var start end) &body body)
+  (let ((ending-value-name (gensym)))
+    `(do ((,var (next-prime ,start) (next-prime (1+ ,var)))
+          (,ending-value-name ,end))
+         ((> ,var ,ending-value-name))
+       ,@body)))
+
+(defmacro with-gensym ((&rest names) &body body)
+  `(let ,(loop for n in names collect `(,n (gensym)))
+     ,@body))
+
+(defmacro do-primes-safe2 ((var start end) &body body)
+  (with-gensym (ending-value-name)
+               `(do ((,var (next-prime ,start) (next-prime (1+ ,var)))
+                     (,ending-value-name ,end))
+                    ((> ,var ,ending-value-name))
+                  ,@body)))

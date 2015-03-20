@@ -7,8 +7,6 @@
 
 (defvar *db* nil)
 
-(add-cd (make-cd "Roses" "Kathy Mattea" 7 t))
-
 (defun add-cd (cd)
   (push cd *db*))
 
